@@ -13,12 +13,18 @@ from test import print_predict
 
 # 予測精度途中結果
 class report_predict(chainer.training.Extension):
-    def __init__(self, model, out_dir):
+    def __init__(self, model, out_dir, gpu):
         self.out_dir = out_dir
         self.model = model
+        self.gpu = gpu
         
     def __call__(self, trainer):
-        print_predict(self.model, self.out_dir)
+        model = self.model.copy()
+
+        if self.gpu >= 0:
+            model.to_cpu()
+
+        print_predict(model, self.out_dir)
 
 
 # chainer/exsample/mnist を元に、ほぼそのままで行ける。
@@ -114,7 +120,7 @@ def main():
     trainer.extend(extensions.ProgressBar())
 
     # report predict
-    trainer.extend(report_predict(model_cnn, args.out), trigger=(frequency, 'epoch'))
+    trainer.extend(report_predict(model_cnn, args.out, args.gpu), trigger=(frequency, 'epoch'))
 
     if args.resume:
         # Resume from a snapshot
