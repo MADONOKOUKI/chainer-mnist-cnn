@@ -10,11 +10,12 @@ g_model_filename = 'minst-cnn.model'
 class CNN(chainer.Chain):
 
     def __init__(self):
-        super(CNN, self).__init__(
-            conv1=L.Convolution2D(1, 20, 5),
-            conv2=L.Convolution2D(20, 50, 5),
-            l1=L.Linear(None, 500),
-            l2=L.Linear(None, 10))
+        super(CNN, self).__init__()
+        with self.init_scope():
+            self.conv1=L.Convolution2D(1, 20, 5)
+            self.conv2=L.Convolution2D(20, 50, 5)
+            self.l1=L.Linear(None, 500)
+            self.l2=L.Linear(None, 10)
 
     def __call__(self, x):
         return self.predict(x)
